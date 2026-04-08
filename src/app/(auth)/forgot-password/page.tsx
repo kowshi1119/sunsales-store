@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '@/lib/validators';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -16,17 +15,28 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, getValues } = useForm<ForgotPasswordInput>({
-    resolver: zodResolver(forgotPasswordSchema),
-  });
+  const { register, handleSubmit, setError, formState: { errors }, getValues } = useForm<ForgotPasswordInput>();
 
   const onSubmit = async (data: ForgotPasswordInput) => {
     setIsLoading(true);
+
+    const parsed = forgotPasswordSchema.safeParse(data);
+    if (!parsed.success) {
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (typeof field === 'string') {
+          setError(field as keyof ForgotPasswordInput, { type: 'manual', message: issue.message });
+        }
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/password/forgot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(parsed.data),
       });
       const result = await res.json();
 

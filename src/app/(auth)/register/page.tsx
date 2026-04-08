@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterInput } from '@/lib/validators';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -20,9 +19,9 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors },
   } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
     defaultValues: { acceptTerms: false as unknown as true },
   });
 
@@ -36,11 +35,24 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
+
+    const parsed = registerSchema.safeParse(data);
+    if (!parsed.success) {
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (typeof field === 'string') {
+          setError(field as keyof RegisterInput, { type: 'manual', message: issue.message });
+        }
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(parsed.data),
       });
 
       const result = await res.json();
@@ -51,7 +63,7 @@ export default function RegisterPage() {
       }
 
       toast.success('Account created! Check your email for the verification code.');
-      router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+      router.push(`/verify-otp?email=${encodeURIComponent(parsed.data.email)}`);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {

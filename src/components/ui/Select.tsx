@@ -22,7 +22,8 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, label, error, hint, options, placeholder, leftIcon, wrapperClassName, id, ...props }, ref) => {
-    const selectId = id || label?.toLowerCase().replace(/\s+/g, '-');
+    const selectId = id || label?.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+    const describedBy = error ? `${selectId}-error` : hint ? `${selectId}-hint` : undefined;
 
     return (
       <div className={cn('flex flex-col gap-1.5', wrapperClassName)}>
@@ -53,7 +54,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
               !props.value && 'text-muted-light',
               className
             )}
-            aria-invalid={!!error}
+            aria-describedby={describedBy}
             {...props}
           >
             {placeholder && (
@@ -70,10 +71,10 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted pointer-events-none" />
         </div>
         {error && (
-          <p className="text-body-xs text-error-500" role="alert">{error}</p>
+          <p id={`${selectId}-error`} className="text-body-xs text-error-500" role="alert">{error}</p>
         )}
         {hint && !error && (
-          <p className="text-body-xs text-muted">{hint}</p>
+          <p id={`${selectId}-hint`} className="text-body-xs text-muted">{hint}</p>
         )}
       </div>
     );

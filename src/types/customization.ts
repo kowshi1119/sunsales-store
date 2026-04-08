@@ -22,6 +22,8 @@ export interface DesignData {
   backgroundColor: string;
   canvasWidth: number;
   canvasHeight: number;
+  printArea?: PrintArea | null;
+  previewImage?: string | null;
 }
 
 export interface DesignElement {
@@ -33,6 +35,11 @@ export interface DesignElement {
   height: number;
   rotation: number;
   opacity: number;
+  visible?: boolean;
+  scaleX?: number;
+  scaleY?: number;
+  zIndex?: number;
+  name?: string;
   // Image-specific
   imageUrl?: string;
   // Text-specific
@@ -41,6 +48,8 @@ export interface DesignElement {
   fontSize?: number;
   fontColor?: string;
   fontWeight?: string;
+  fontStyle?: 'normal' | 'italic';
+  underline?: boolean;
   textAlign?: 'left' | 'center' | 'right';
 }
 

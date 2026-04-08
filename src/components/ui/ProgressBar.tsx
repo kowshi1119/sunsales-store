@@ -26,6 +26,24 @@ const sizeStyles: Record<string, string> = {
   lg: 'h-4',
 };
 
+function getProgressWidthClass(percentage: number) {
+  if (percentage >= 100) return 'w-full';
+  if (percentage >= 95) return 'w-[95%]';
+  if (percentage >= 90) return 'w-[90%]';
+  if (percentage >= 80) return 'w-[80%]';
+  if (percentage >= 75) return 'w-3/4';
+  if (percentage >= 70) return 'w-[70%]';
+  if (percentage >= 60) return 'w-3/5';
+  if (percentage >= 50) return 'w-1/2';
+  if (percentage >= 40) return 'w-2/5';
+  if (percentage >= 30) return 'w-[30%]';
+  if (percentage >= 25) return 'w-1/4';
+  if (percentage >= 20) return 'w-1/5';
+  if (percentage >= 10) return 'w-[10%]';
+  if (percentage > 0) return 'w-[5%]';
+  return 'w-0';
+}
+
 export default function ProgressBar({
   value,
   max = 100,
@@ -47,20 +65,17 @@ export default function ProgressBar({
         </div>
       )}
       <div
-        className={cn('w-full bg-surface-hover rounded-full overflow-hidden', sizeStyles[size])}
+        className={cn('w-full overflow-hidden rounded-full bg-surface-hover', sizeStyles[size])}
         role="progressbar"
-        aria-valuenow={value}
-        aria-valuemin={0}
-        aria-valuemax={max}
         aria-label={label || `Progress: ${Math.round(percentage)}%`}
       >
         <div
           className={cn(
             'h-full rounded-full transition-all duration-slow',
+            getProgressWidthClass(percentage),
             variantColors[variant],
             animated && 'transition-[width]'
           )}
-          style={{ width: `${percentage}%` }}
         />
       </div>
     </div>

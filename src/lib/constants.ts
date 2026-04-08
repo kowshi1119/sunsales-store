@@ -59,6 +59,35 @@ export const SRI_LANKA_PROVINCES = [
   'North Western', 'North Central', 'Uva', 'Sabaragamuwa',
 ] as const;
 
+/** District to province lookup for checkout/address forms */
+export const DISTRICT_TO_PROVINCE: Record<(typeof SRI_LANKA_DISTRICTS)[number], (typeof SRI_LANKA_PROVINCES)[number]> = {
+  Colombo: 'Western',
+  Gampaha: 'Western',
+  Kalutara: 'Western',
+  Kandy: 'Central',
+  Matale: 'Central',
+  'Nuwara Eliya': 'Central',
+  Galle: 'Southern',
+  Matara: 'Southern',
+  Hambantota: 'Southern',
+  Jaffna: 'Northern',
+  Kilinochchi: 'Northern',
+  Mannar: 'Northern',
+  Mullaitivu: 'Northern',
+  Vavuniya: 'Northern',
+  Trincomalee: 'Eastern',
+  Batticaloa: 'Eastern',
+  Ampara: 'Eastern',
+  Kurunegala: 'North Western',
+  Puttalam: 'North Western',
+  Anuradhapura: 'North Central',
+  Polonnaruwa: 'North Central',
+  Badulla: 'Uva',
+  Monaragala: 'Uva',
+  Ratnapura: 'Sabaragamuwa',
+  Kegalle: 'Sabaragamuwa',
+};
+
 /** Navigation links */
 export const NAV_LINKS = [
   { label: 'Home', href: '/' },

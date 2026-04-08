@@ -44,6 +44,9 @@ export default function ProductInfo({ product, selectedVariant, onVariantChange 
   const stockCount = selectedVariant?.stock ?? 99;
   const isOutOfStock = selectedVariant ? selectedVariant.stock < 1 : false;
   const showStockCount = product.variants.length > 0;
+  const customizeHref = product.type === 'CUSTOMIZABLE_PHONE_COVER'
+    ? '/customize/phone-cover'
+    : `/checkout?product=${product.slug}&customize=1`;
 
   const featureHighlights = useMemo(() => {
     const items = ['Premium finishing', 'Islandwide delivery', 'Secure checkout'];
@@ -187,7 +190,7 @@ export default function ProductInfo({ product, selectedVariant, onVariantChange 
           </Button>
 
           {product.customizationConfig ? (
-            <Link href={`/checkout?product=${product.slug}&customize=1`} className="block">
+            <Link href={customizeHref} className="block">
               <Button type="button" variant="outline" fullWidth leftIcon={<Sparkles className="h-4 w-4" />}>
                 Customize & Order
               </Button>

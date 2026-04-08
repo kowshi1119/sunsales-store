@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Heart, LogIn } from 'lucide-react';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import ProductCard, { ProductCardSkeleton } from '@/components/product/ProductCard';
+import { AnimatedSection } from '@/components/shared/SectionHeading';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/Skeleton';
 import { useHydration } from '@/hooks/useHydration';
@@ -73,12 +74,12 @@ export default function WishlistPage() {
       <div className="container-base py-6 md:py-10">
         <Breadcrumbs items={[{ label: 'Wishlist', href: '/wishlist' }]} />
 
-        <div className="mb-8">
+        <AnimatedSection className="mb-8">
           <h1 className="text-display-md font-display text-foreground">Wishlist</h1>
           <p className="mt-1 text-body-md text-muted">
             Keep track of the gifts and designs you want to come back to.
           </p>
-        </div>
+        </AnimatedSection>
 
         {isLoading ? (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
@@ -87,33 +88,37 @@ export default function WishlistPage() {
             ))}
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6">
+          <AnimatedSection delay={120} className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
+          </AnimatedSection>
         ) : hasLocalItems ? (
-          <EmptyState
-            icon={Heart}
-            title="Your saved items need syncing"
-            description={`You currently have ${localCount} item${localCount === 1 ? '' : 's'} saved locally. Sign in to sync them with your account.`}
-            action={
-              <Link href="/login?callbackUrl=/wishlist">
-                <Button rightIcon={<LogIn className="h-4 w-4" />}>Sign In to Sync</Button>
-              </Link>
-            }
-          />
+          <AnimatedSection delay={120}>
+            <EmptyState
+              icon={Heart}
+              title="Your saved items need syncing"
+              description={`You currently have ${localCount} item${localCount === 1 ? '' : 's'} saved locally. Sign in to sync them with your account.`}
+              action={
+                <Link href="/login?callbackUrl=/wishlist">
+                  <Button rightIcon={<LogIn className="h-4 w-4" />}>Sign In to Sync</Button>
+                </Link>
+              }
+            />
+          </AnimatedSection>
         ) : (
-          <EmptyState
-            icon={Heart}
-            title="Your wishlist is empty"
-            description="Save products you love so you can find them again in one place."
-            action={
-              <Link href="/shop">
-                <Button>Explore the Shop</Button>
-              </Link>
-            }
-          />
+          <AnimatedSection delay={120}>
+            <EmptyState
+              icon={Heart}
+              title="Your wishlist is empty"
+              description="Save products you love so you can find them again in one place."
+              action={
+                <Link href="/shop">
+                  <Button>Explore the Shop</Button>
+                </Link>
+              }
+            />
+          </AnimatedSection>
         )}
       </div>
     </div>

@@ -11,20 +11,33 @@ interface ProductVariantsProps {
 }
 
 const COLOR_SWATCHES: Record<string, string> = {
-  black: '#1f2937',
-  white: '#ffffff',
-  red: '#ef4444',
-  blue: '#3b82f6',
-  green: '#22c55e',
-  yellow: '#facc15',
-  pink: '#ec4899',
-  purple: '#8b5cf6',
-  orange: '#f97316',
-  gold: '#c9a84c',
-  silver: '#94a3b8',
-  gray: '#9ca3af',
-  grey: '#9ca3af',
-  navy: '#1b2d45',
+  black: 'bg-slate-800',
+  '#1f2937': 'bg-slate-800',
+  white: 'bg-white',
+  '#ffffff': 'bg-white',
+  red: 'bg-red-500',
+  '#ef4444': 'bg-red-500',
+  blue: 'bg-blue-500',
+  '#3b82f6': 'bg-blue-500',
+  green: 'bg-green-500',
+  '#22c55e': 'bg-green-500',
+  yellow: 'bg-yellow-400',
+  '#facc15': 'bg-yellow-400',
+  pink: 'bg-pink-500',
+  '#ec4899': 'bg-pink-500',
+  purple: 'bg-violet-500',
+  '#8b5cf6': 'bg-violet-500',
+  orange: 'bg-orange-500',
+  '#f97316': 'bg-orange-500',
+  gold: 'bg-amber-500',
+  '#c9a84c': 'bg-amber-500',
+  silver: 'bg-slate-400',
+  '#94a3b8': 'bg-slate-400',
+  gray: 'bg-gray-400',
+  grey: 'bg-gray-400',
+  '#9ca3af': 'bg-gray-400',
+  navy: 'bg-secondary-500',
+  '#1b2d45': 'bg-secondary-500',
 };
 
 function formatAttributeLabel(key: string): string {
@@ -36,10 +49,6 @@ function formatAttributeLabel(key: string): string {
 }
 
 function getSwatchColor(value: string): string | null {
-  if (value.startsWith('#')) {
-    return value;
-  }
-
   return COLOR_SWATCHES[value.toLowerCase()] ?? null;
 }
 
@@ -142,13 +151,11 @@ export default function ProductVariants({ variants, selectedVariantId, onVariant
                       : 'border-surface-border bg-white text-foreground hover:border-primary-300 hover:bg-primary-50',
                     isDisabled && 'cursor-not-allowed opacity-50 line-through'
                   )}
-                  aria-pressed={isSelected}
                   aria-label={`${group.label}: ${option.label}`}
                 >
                   {swatchColor && (
                     <span
-                      className="h-4 w-4 rounded-full border border-surface-border"
-                      style={{ backgroundColor: swatchColor }}
+                      className={cn('h-4 w-4 rounded-full border border-surface-border', swatchColor)}
                       aria-hidden="true"
                     />
                   )}

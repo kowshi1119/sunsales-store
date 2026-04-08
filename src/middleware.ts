@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+const AUTH_SECRET = process.env.NEXTAUTH_SECRET || 'sun-sales-local-dev-secret';
+
 // Routes that require authentication
 const protectedRoutes = ['/account', '/checkout'];
 
@@ -15,7 +17,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    secret: AUTH_SECRET,
   });
 
   const isAuthenticated = !!token;

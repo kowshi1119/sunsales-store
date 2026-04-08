@@ -1,11 +1,12 @@
 'use client';
 
-import { Suspense } from 'react';
+import Link from 'next/link';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search } from 'lucide-react';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
 import ProductCard, { ProductCardSkeleton } from '@/components/product/ProductCard';
+import { AnimatedSection } from '@/components/shared/SectionHeading';
 import { EmptyState } from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
 import type { ProductListItem } from '@/types/product';
@@ -81,8 +82,7 @@ function SearchContent() {
       <div className="container-base">
         <Breadcrumbs items={[{ label: 'Search', href: '/search' }, { label: query || 'Results' }]} />
 
-        {/* Header */}
-        <div className="py-6 md:py-10">
+        <AnimatedSection className="py-6 md:py-10">
           <div className="flex items-center gap-3 mb-2">
             <Search className="h-6 w-6 text-primary-500" />
             <h1 className="text-display-md md:text-display-lg font-display text-foreground">
@@ -94,10 +94,10 @@ function SearchContent() {
               {total} product{total !== 1 ? 's' : ''} found
             </p>
           )}
-        </div>
+        </AnimatedSection>
 
-        {/* Results */}
-        {isLoading ? (
+        <AnimatedSection delay={100}>
+          {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 pb-16">
             {Array.from({ length: 8 }).map((_, i) => (
               <ProductCardSkeleton key={i} />
@@ -114,16 +114,16 @@ function SearchContent() {
             }
             action={
               query ? (
-                <a href="/shop">
+                <Link href="/shop">
                   <Button variant="outline">Browse All Products</Button>
-                </a>
+                </Link>
               ) : undefined
             }
             className="pb-20"
           />
         ) : (
           <div className="pb-16">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -137,6 +137,7 @@ function SearchContent() {
             )}
           </div>
         )}
+        </AnimatedSection>
       </div>
     </div>
   );

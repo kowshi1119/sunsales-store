@@ -10,6 +10,14 @@ interface TabsContextValue {
 
 const TabsContext = createContext<TabsContextValue | null>(null);
 
+function getTabTriggerId(id: string) {
+  return `tab-trigger-${id}`;
+}
+
+function getTabPanelId(id: string) {
+  return `tab-panel-${id}`;
+}
+
 function useTabs() {
   const ctx = useContext(TabsContext);
   if (!ctx) throw new Error('Tab components must be used within <Tabs>');
@@ -40,7 +48,7 @@ export function TabList({ children, className }: TabListProps) {
   return (
     <div
       className={cn('flex border-b border-surface-border gap-0', className)}
-      role="tablist"
+      aria-label="Section tabs"
     >
       {children}
     </div>
@@ -59,8 +67,11 @@ export function TabTrigger({ id, children, className }: TabTriggerProps) {
 
   return (
     <button
-      role="tab"
-      aria-selected={isActive}
+      id={getTabTriggerId(id)}
+      type="button"
+      data-active={isActive ? 'true' : 'false'}
+      aria-controls={getTabPanelId(id)}
+      tabIndex={isActive ? 0 : -1}
       onClick={() => setActiveTab(id)}
       className={cn(
         'px-4 py-3 text-body-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap',
@@ -86,8 +97,13 @@ export function TabContent({ id, children, className }: TabContentProps) {
   if (activeTab !== id) return null;
 
   return (
-    <div role="tabpanel" className={cn('py-4', className)}>
+    <section
+      id={getTabPanelId(id)}
+      aria-labelledby={getTabTriggerId(id)}
+      tabIndex={0}
+      className={cn('py-4', className)}
+    >
       {children}
-    </div>
+    </section>
   );
 }

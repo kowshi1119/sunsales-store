@@ -56,6 +56,14 @@ interface StarRatingProps {
   className?: string;
 }
 
+function getStarFillClass(fillPercentage: number) {
+  if (fillPercentage >= 100) return 'w-full';
+  if (fillPercentage >= 75) return 'w-3/4';
+  if (fillPercentage >= 50) return 'w-1/2';
+  if (fillPercentage >= 25) return 'w-1/4';
+  return 'w-0';
+}
+
 export function StarRating({
   rating,
   maxRating = 5,
@@ -70,26 +78,22 @@ export function StarRating({
   const sizeMap = { sm: 'h-3.5 w-3.5', md: 'h-4 w-4', lg: 'h-5 w-5' };
 
   return (
-    <div className={cn('flex items-center gap-1', className)} role={interactive ? 'radiogroup' : undefined}>
+    <div className={cn('flex items-center gap-1', className)} aria-label={`Rated ${rating.toFixed(1)} out of ${maxRating}`}>
       <div className="flex items-center gap-0.5">
         {Array.from({ length: maxRating }).map((_, i) => {
           const starValue = i + 1;
           const isFilled = starValue <= Math.floor(rating);
           const isPartial = !isFilled && starValue <= Math.ceil(rating);
           const fillPercentage = isPartial ? (rating - Math.floor(rating)) * 100 : 0;
+          const fillClass = isFilled ? 'w-full' : getStarFillClass(fillPercentage);
 
           const starEl = (
             <span key={i} className="relative inline-flex">
-              {/* Background star (empty) */}
               <Star
                 className={cn(sizeMap[size], 'text-surface-border fill-surface-border')}
                 strokeWidth={0}
               />
-              {/* Foreground star (filled) */}
-              <span
-                className="absolute inset-0 overflow-hidden"
-                style={{ width: isFilled ? '100%' : `${fillPercentage}%` }}
-              >
+              <span className={cn('absolute inset-0 overflow-hidden', fillClass)}>
                 <Star
                   className={cn(sizeMap[size], 'text-primary-400 fill-primary-400')}
                   strokeWidth={0}
@@ -105,8 +109,6 @@ export function StarRating({
                 type="button"
                 onClick={() => onChange?.(starValue)}
                 className="p-0.5 hover:scale-110 transition-transform"
-                role="radio"
-                aria-checked={starValue === Math.round(rating)}
                 aria-label={`${starValue} star${starValue !== 1 ? 's' : ''}`}
               >
                 {starValue <= Math.round(rating) ? (
@@ -122,7 +124,7 @@ export function StarRating({
         })}
       </div>
       {showValue && (
-        <span className="text-body-sm font-semibold text-foreground ml-0.5">
+        <span className="ml-0.5 text-body-sm font-semibold text-foreground">
           {rating.toFixed(1)}
         </span>
       )}

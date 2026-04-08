@@ -117,6 +117,53 @@ export const reviewSchema = z.object({
 
 export type ReviewInput = z.infer<typeof reviewSchema>;
 
+export const customizationSaveSchema = z.object({
+  phoneModelId: z.string().min(1, 'Phone model is required'),
+  caseType: z.string().min(1, 'Case type is required'),
+  previewImage: z.string().min(1, 'Preview image is required'),
+  uploadedImages: z.array(z.string()).max(10).default([]),
+  designData: z.object({
+    backgroundColor: z.string().default('#FFFFFF'),
+    canvasWidth: z.number().positive(),
+    canvasHeight: z.number().positive(),
+    printArea: z.object({
+      x: z.number(),
+      y: z.number(),
+      width: z.number(),
+      height: z.number(),
+    }).nullable().optional(),
+    previewImage: z.string().nullable().optional(),
+    elements: z.array(
+      z.object({
+        id: z.string(),
+        type: z.enum(['image', 'text']),
+        x: z.number(),
+        y: z.number(),
+        width: z.number(),
+        height: z.number(),
+        rotation: z.number(),
+        opacity: z.number().min(0).max(1),
+        visible: z.boolean().optional(),
+        scaleX: z.number().optional(),
+        scaleY: z.number().optional(),
+        zIndex: z.number().optional(),
+        name: z.string().optional(),
+        imageUrl: z.string().optional(),
+        text: z.string().optional(),
+        fontFamily: z.string().optional(),
+        fontSize: z.number().optional(),
+        fontColor: z.string().optional(),
+        fontWeight: z.string().optional(),
+        fontStyle: z.enum(['normal', 'italic']).optional(),
+        underline: z.boolean().optional(),
+        textAlign: z.enum(['left', 'center', 'right']).optional(),
+      })
+    ).default([]),
+  }),
+});
+
+export type CustomizationSaveInput = z.infer<typeof customizationSaveSchema>;
+
 // ============ CONTACT VALIDATORS ============
 
 export const contactSchema = z.object({
@@ -159,25 +206,45 @@ export const checkoutSchema = z.object({
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 
+export const checkoutCartItemSchema = z.object({
+  productId: z.string().min(1, 'Product is required'),
+  variantId: z.string().nullable().optional(),
+  designId: z.string().nullable().optional(),
+  quantity: z.number().int().min(1).max(99),
+});
+
+export const createOrderSchema = checkoutSchema.extend({
+  items: z.array(checkoutCartItemSchema).min(1, 'Your cart is empty'),
+});
+
+export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+
 // ============ ADMIN VALIDATORS ============
 
 export const adminProductSchema = z.object({
   name: z.string().min(2, 'Product name is required').max(200),
-  slug: z.string().min(2).max(200),
+  slug: z
+    .string()
+    .min(2, 'Slug is required')
+    .max(200)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use lowercase letters, numbers, and hyphens only'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
-  shortDescription: z.string().max(500).optional(),
+  shortDescription: z.string().max(500).optional().nullable(),
   type: z.enum(['STANDARD', 'CUSTOMIZABLE_PHONE_COVER', 'CUSTOMIZABLE_FRAME', 'CUSTOMIZABLE_OTHER']),
   basePrice: z.coerce.number().min(0, 'Price must be positive'),
   salePrice: z.coerce.number().min(0).optional().nullable(),
-  sku: z.string().optional().nullable(),
+  sku: z.string().max(100).optional().nullable(),
+  stock: z.coerce.number().int().min(0).default(0),
+  weight: z.coerce.number().min(0).optional().nullable(),
   isActive: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   isBestSeller: z.boolean().default(false),
   isNewArrival: z.boolean().default(false),
-  tags: z.array(z.string()).default([]),
-  categoryIds: z.array(z.string()).min(1, 'At least one category is required'),
-  seoTitle: z.string().max(70).optional(),
-  seoDescription: z.string().max(160).optional(),
+  tags: z.array(z.string().trim().min(1)).default([]),
+  categoryIds: z.array(z.string().min(1)).min(1, 'At least one category is required'),
+  imageUrls: z.array(z.string().min(1)).max(12).default([]),
+  seoTitle: z.string().max(70).optional().nullable(),
+  seoDescription: z.string().max(160).optional().nullable(),
 });
 
 export type AdminProductInput = z.infer<typeof adminProductSchema>;

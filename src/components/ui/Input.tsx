@@ -17,7 +17,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, hint, leftIcon, rightIcon, type, wrapperClassName, id, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
-    const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
+    const inputId = id || label?.toLowerCase().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '');
+    const describedBy = error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined;
 
     return (
       <div className={cn('flex flex-col gap-1.5', wrapperClassName)}>
@@ -53,8 +54,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               (rightIcon || isPassword) && 'pr-10',
               className
             )}
-            aria-invalid={!!error}
-            aria-describedby={error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
+            aria-describedby={describedBy}
             {...props}
           />
           {isPassword && (

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import Breadcrumbs from '@/components/layout/Breadcrumbs';
+import { AnimatedSection } from '@/components/shared/SectionHeading';
 import Button from '@/components/ui/Button';
 import { EmptyState } from '@/components/ui/Skeleton';
 import { useHydration } from '@/hooks/useHydration';
@@ -117,7 +118,7 @@ export default function CartPage() {
       <div className="container-base py-6 md:py-10">
         <Breadcrumbs items={[{ label: 'Cart', href: '/cart' }]} />
 
-        <div className="mb-8 flex items-center justify-between gap-3">
+        <AnimatedSection className="mb-8 flex items-center justify-between gap-3">
           <div>
             <h1 className="text-display-md font-display text-foreground">Your Cart</h1>
             <p className="mt-1 text-body-md text-muted">
@@ -130,21 +131,23 @@ export default function CartPage() {
               Continue Shopping
             </Button>
           </Link>
-        </div>
+        </AnimatedSection>
 
         {items.length === 0 ? (
-          <EmptyState
-            icon={ShoppingBag}
-            title="Your cart is empty"
-            description="Browse the collection and add something special to get started."
-            action={
-              <Link href="/shop">
-                <Button rightIcon={<ArrowRight className="h-4 w-4" />}>Start Shopping</Button>
-              </Link>
-            }
-          />
+          <AnimatedSection delay={120}>
+            <EmptyState
+              icon={ShoppingBag}
+              title="Your cart is empty"
+              description="Browse the collection and add something special to get started."
+              action={
+                <Link href="/shop">
+                  <Button rightIcon={<ArrowRight className="h-4 w-4" />}>Start Shopping</Button>
+                </Link>
+              }
+            />
+          </AnimatedSection>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[1.5fr_0.9fr]">
+          <AnimatedSection delay={120} className="grid gap-6 lg:grid-cols-[1.5fr_0.9fr]">
             <div className="space-y-4">
               {items.map((item) => (
                 <CartLine
@@ -187,7 +190,7 @@ export default function CartPage() {
                 </Link>
               </div>
             </aside>
-          </div>
+          </AnimatedSection>
         )}
       </div>
     </div>

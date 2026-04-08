@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginInput } from '@/lib/validators';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -43,23 +42,35 @@ function LoginContent() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm<LoginInput>();
 
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
+
+    const parsed = loginSchema.safeParse(data);
+    if (!parsed.success) {
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (typeof field === 'string') {
+          setError(field as keyof LoginInput, { type: 'manual', message: issue.message });
+        }
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const result = await signIn('credentials', {
-        email: data.email,
-        password: data.password,
+        email: parsed.data.email,
+        password: parsed.data.password,
         redirect: false,
       });
 
       if (result?.error) {
         if (result.error === 'UNVERIFIED_EMAIL') {
-          router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+          router.push(`/verify-otp?email=${encodeURIComponent(parsed.data.email)}`);
           return;
         }
         toast.error(result.error);

@@ -4,7 +4,6 @@ import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { resetPasswordSchema, type ResetPasswordInput } from '@/lib/validators';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -28,8 +27,7 @@ function ResetPasswordContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<ResetPasswordInput>({
-    resolver: zodResolver(resetPasswordSchema),
+  const { register, handleSubmit, watch, setError, formState: { errors } } = useForm<ResetPasswordInput>({
     defaultValues: { token },
   });
 
@@ -43,11 +41,24 @@ function ResetPasswordContent() {
 
   const onSubmit = async (data: ResetPasswordInput) => {
     setIsLoading(true);
+
+    const parsed = resetPasswordSchema.safeParse(data);
+    if (!parsed.success) {
+      parsed.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (typeof field === 'string') {
+          setError(field as keyof ResetPasswordInput, { type: 'manual', message: issue.message });
+        }
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('/api/password/reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, email }),
+        body: JSON.stringify({ ...parsed.data, email }),
       });
       const result = await res.json();
       if (!res.ok) {

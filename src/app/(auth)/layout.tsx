@@ -1,5 +1,14 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Sun } from 'lucide-react';
+import { generateMetadata as buildMetadata } from '@/lib/seo';
+
+export const metadata: Metadata = buildMetadata({
+  title: 'Account Access',
+  description: 'Sign in, register, verify your email, or reset your password securely with Sun Sales.',
+  url: '/login',
+  noIndex: true,
+});
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
